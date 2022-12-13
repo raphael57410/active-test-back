@@ -7,7 +7,9 @@ class NumberCtrl {
         try {
             //sort the numbers from smallest to largest
             const numberArray = await UserNumber.find().sort({number:1});
-            res.status(200).send(numberArray);
+            const lastCreatedNumber = await UserNumber.findOne().sort({createdAt: -1}).lean();
+
+            res.status(200).send([...numberArray,{...lastCreatedNumber, lastCreated:true}]);
         }catch (err){
             console.log(err);
         }
@@ -19,9 +21,10 @@ class NumberCtrl {
         if (!body) res.send("une erreur est survenue!");
 
         try {
-            await UserNumber.create({...body});
+            const newNumber = await UserNumber.create({...body});
 
-            res.status(201).send("Nouveau nombre ajouté !");
+            console.log(newNumber);
+            res.status(201).send(newNumber);
         }catch (err){
             console.log(err);
         }
